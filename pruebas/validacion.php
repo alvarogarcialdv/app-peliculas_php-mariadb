@@ -11,6 +11,14 @@ function comprobar(bool $condicion, string $mensaje): void
     }
 }
 
+comprobar(esUtf8Valido('Texto ASCII'), 'Debe aceptar texto ASCII como UTF-8 válido.');
+comprobar(esUtf8Valido('Árbol, caña y 😀'), 'Debe aceptar tildes, ñ y emojis.');
+comprobar(contarCaracteresUnicode('Aéñ😀') === 4, 'Debe contar puntos de código Unicode.');
+comprobar(contarCaracteresUnicode("uno\ndos") === 7, 'Debe contar los saltos de línea.');
+$utf8Invalido = "\xC3\x28";
+comprobar(!esUtf8Valido($utf8Invalido), 'Debe detectar UTF-8 inválido.');
+comprobar(contarCaracteresUnicode($utf8Invalido) === null, 'Debe detectar errores al contar UTF-8 inválido.');
+
 $base = ['titulo' => ' Película ', 'director' => ' Directora ', 'anio' => '2001', 'genero' => ' Drama ', 'sinopsis' => ''];
 [$datos, $errores] = validarPelicula($base);
 comprobar($errores === [], 'Debe admitir datos válidos y sinopsis vacía.');
@@ -22,7 +30,15 @@ foreach (['titulo' => 200, 'director' => 120, 'genero' => 80, 'sinopsis' => 2000
     comprobar(isset($errores[$campo]), "Debe rechazar exceso en $campo.");
     [, $errores] = validarPelicula(array_replace($base, [$campo => []]));
     comprobar(isset($errores[$campo]), "Debe rechazar arrays en $campo.");
+    [, $errores] = validarPelicula(array_replace($base, [$campo => $utf8Invalido]));
+    comprobar(isset($errores[$campo]), "Debe rechazar UTF-8 inválido en $campo.");
 }
+$sinopsisConSaltos = str_repeat("ñ\n", 999) . 'ñ😀';
+comprobar(contarCaracteresUnicode($sinopsisConSaltos) === 2000, 'La sinopsis de límite debe tener 2000 caracteres.');
+[, $errores] = validarPelicula(array_replace($base, ['sinopsis' => $sinopsisConSaltos]));
+comprobar($errores === [], 'Debe aceptar una sinopsis Unicode con saltos en el límite.');
+[, $errores] = validarPelicula(array_replace($base, ['sinopsis' => $sinopsisConSaltos . 'á']));
+comprobar(isset($errores['sinopsis']), 'Debe rechazar una sinopsis Unicode con saltos sobre el límite.');
 foreach (['titulo', 'director', 'genero'] as $campo) {
     [, $errores] = validarPelicula(array_replace($base, [$campo => '   ']));
     comprobar(isset($errores[$campo]), "Debe exigir $campo.");

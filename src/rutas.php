@@ -38,7 +38,7 @@ function atenderPeticion(mixed $ruta): void
     }
     if ($listar) {
         $busqueda = $_GET['busqueda'] ?? '';
-        if (!is_string($busqueda) || !mb_check_encoding($busqueda, 'UTF-8')) {
+        if (!is_string($busqueda) || !esUtf8Valido($busqueda)) {
             mostrar('error', ['titulo' => 'Búsqueda inválida', 'mensaje' => 'Introduce un texto de búsqueda válido.'], 422);
             return;
         }

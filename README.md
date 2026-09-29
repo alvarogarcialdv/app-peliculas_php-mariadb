@@ -6,7 +6,7 @@ Ejecuta todos los comandos de este documento desde la raíz de la aplicación.
 
 ## Requisitos
 
-- PHP 8.4 o posterior con las extensiones `pdo_mysql` y `mbstring`, y soporte de sesiones.
+- PHP 8.4 o posterior con la extensión `pdo_mysql` y soporte de sesiones.
 - MariaDB con InnoDB y `utf8mb4`.
 - Cliente `mariadb` o un panel que permita importar archivos SQL.
 
@@ -80,6 +80,8 @@ Si un hosting obliga a usar `public_html/`, coloca allí el contenido de `public
 Los formularios usan sesiones PHP para los tokens CSRF y los mensajes de confirmación. El servidor debe conservar la sesión entre peticiones. Con varias instancias se necesitaría almacenamiento de sesiones compartido o afinidad de sesión; esta entrega no incorpora esas soluciones.
 
 Las consultas usan parámetros preparados y las salidas HTML se escapan. Las operaciones correctas redirigen con `303`; los datos inválidos devuelven `422`, un CSRF inválido devuelve `403` y los recursos inexistentes, `404`. Los errores internos devuelven `500` con un mensaje genérico y registran el detalle en el servidor.
+
+La validación utiliza PCRE con soporte Unicode, incluido en PHP, para comprobar UTF-8 y contar puntos de código. No requiere `mbstring`, no normaliza Unicode ni cuenta grafemas.
 
 `GET /index.php?ruta=/salud` no inicia sesión. Ejecuta una consulta mínima y devuelve texto UTF-8 con `200` cuando conecta con MariaDB o `503` cuando falla, sin mostrar detalles técnicos.
 
