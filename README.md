@@ -85,33 +85,4 @@ La validación utiliza PCRE con soporte Unicode, incluido en PHP, para comprobar
 
 `GET /index.php?ruta=/salud` no inicia sesión. Ejecuta una consulta mínima y devuelve texto UTF-8 con `200` cuando conecta con MariaDB o `503` cuando falla, sin mostrar detalles técnicos.
 
-## Pruebas específicas de PHP
-
-Comprueba la sintaxis y la validación sin instalar dependencias:
-
-```bash
-find . -name '*.php' -not -path './vendor/*' -exec php -l {} \;
-php pruebas/validacion.php
-```
-
-La prueba de persistencia necesita una base exclusiva de pruebas con `base-datos/esquema.sql` importado y las variables `DB_*` apuntando a ella:
-
-```bash
-php pruebas/base-datos.php
-```
-
-La prueba crea registros dentro de una transacción y ejecuta `rollback`; el contador de identificadores puede avanzar. No la ejecutes contra datos reales.
-
-Con el servidor iniciado, comprueba también que:
-
-1. El listado muestra los datos iniciales y la búsqueda no distingue mayúsculas.
-2. Una búsqueda inexistente muestra el estado vacío.
-3. Crear y editar conservan los valores y redirigen al detalle.
-4. Los campos vacíos, demasiado largos o con un año fuera de rango se rechazan.
-5. Eliminar requiere confirmación y devuelve al listado.
-6. Un identificador o una ruta lógica inexistente devuelve `404`.
-7. `/index.php?ruta=/salud` devuelve texto UTF-8, no crea una cookie de sesión y refleja la disponibilidad de MariaDB.
-
-No hay fase de compilación ni herramientas de lint adicionales al comprobador sintáctico de PHP.
-
 No se incluye una licencia en esta entrega.
